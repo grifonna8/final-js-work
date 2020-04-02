@@ -129,7 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* аккордеон калькулятор */
   const accordeonCalc = () => {
-    const tabWrapper = document.querySelector('#accordion');
+    const tabWrapper = document.querySelector('#accordion'),
+          septicType = document.querySelectorAll('.onoffswitch-checkbox'),
+          titleHide = document.querySelectorAll('.title-text')[1],
+          selectHide = [...document.querySelectorAll('.select-box')].slice(2, 4);
     let tabHeading = document.querySelectorAll('.panel-heading'),
         tabBody = document.querySelectorAll('.panel-collapse '),
         calcBtn = document.querySelectorAll('.construct-btn');
@@ -137,33 +140,56 @@ document.addEventListener('DOMContentLoaded', () => {
     tabHeading = [...tabHeading].slice(0,4);
     tabBody = [...tabBody].slice(0,4);
     
-    const tabChange = (index) => {
+    const tabChange = (event, index) => {
+      event.preventDefault();
       for (let i = 0; i < tabBody.length; i++){
         if (index === i){
           tabBody[i].setAttribute('style', 'display: block');
+          if (index === 1 && septicType[0].checked) {
+            titleHide.style.display = 'none';
+            selectHide.forEach((elem) => {
+              elem.style.display = 'none';
+            });
+          } else {
+            titleHide.style.display = 'initial';
+            selectHide.forEach((elem) => {
+              elem.style.display = 'initial';
+            });
+          }
         } else {
           tabBody[i].setAttribute('style', 'display: none');
         }
       }
     };
 
-    const tabButtonChange = (index) => {
+    const tabButtonChange = (event, index) => {
+      event.preventDefault();
       for (let i = 1; i < tabBody.length; i++) {
         if (index + 1 === i ){
           tabBody[i].setAttribute('style', 'display: block');
+          if (i === 1 && septicType[0].checked) {
+            titleHide.style.display = 'none';
+            selectHide.forEach((elem) => {
+              elem.style.display = 'none';
+            });
+          } else {
+            titleHide.style.display = 'initial';
+            selectHide.forEach((elem) => {
+              elem.style.display = 'initial';
+            });
+          }
           tabBody[i-1].setAttribute('style', 'display: none');
         }
       }
     };
 
     tabWrapper.addEventListener('click', (event) => {
-      event.preventDefault();
       let target = event.target,
           targetBtn = target.closest('.construct-btn');
       if (targetBtn){
         calcBtn.forEach((elem, i) => {
           if (targetBtn === elem) {
-            tabButtonChange(i);
+            tabButtonChange(event, i);
           }
       });
       }
@@ -172,13 +198,48 @@ document.addEventListener('DOMContentLoaded', () => {
       if (target){
         tabHeading.forEach((elem, i) => {
           if (target === elem){
-            tabChange(i);
+            tabChange(event, i);
           }
         });
       }
     }); 
 
   };
-  
   accordeonCalc();
+
+  /* калькулятор */
+  const calc = () => {
+    const calcBlock = document.querySelector('#accordion'),
+          septicType = document.querySelectorAll('.onoffswitch-checkbox'),
+          titleHide = document.querySelectorAll('.title-text')[1],
+          selectHide = [...document.querySelectorAll('.select-box')].slice(2, 4);
+    let calcResult = document.querySelector('#calc-result');
+
+    /* typeValue = calcType.options[calcType.selectedIndex].value; */
+    const countSum = () => {
+      let startPrice = 0;
+      if (septicType[0].checked){
+        startPrice = 10000;
+
+      } else {
+        startPrice = 15000;
+      }
+      console.log(startPrice);
+      calcResult.placeholder = startPrice;
+    };
+
+
+    calcBlock.addEventListener('click', (event) => {
+      const target = event.target;
+
+      if (target.matches('.link-text') || target.matches('.construct-btn') ||
+       target.matches('select') || target.matches('input')){
+        countSum();
+      }
+    });
+
+
+
+  };
+  calc();
 });
