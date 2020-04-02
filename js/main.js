@@ -67,12 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* вызов попапа check */
   const popupCheck = () => {
-    const checkForm = document.querySelectorAll('.popup-check'),
+    const checkForm = document.querySelector('.popup-check'),
           btn = document.querySelector('.gauging-button'),
           closeBtn = document.querySelectorAll('.popup-close')[2];
 
-    const formOpen = (event) => {
-      event.preventDefault();
+    const formOpen = () => {
       checkForm.setAttribute('style', 'display: block');
     };
 
@@ -109,8 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
           discountForm = document.querySelector('.popup-discount'),
           closeBtn = document.querySelectorAll('.popup-close')[1];
 
-    const formOpen = (event) => {
-      event.preventDefault();
+    const formOpen = () => {
       discountForm.setAttribute('style', 'display: block');
     };
 
@@ -213,21 +211,43 @@ document.addEventListener('DOMContentLoaded', () => {
           septicType = document.querySelectorAll('.onoffswitch-checkbox'),
           titleHide = document.querySelectorAll('.title-text')[1],
           selectHide = [...document.querySelectorAll('.select-box')].slice(2, 4);
-    let calcResult = document.querySelector('#calc-result');
+    let calcResult = document.querySelector('#calc-result'),
+    selectFormControl = [...document.querySelectorAll('.form-control')];
 
-    /* typeValue = calcType.options[calcType.selectedIndex].value; */
     const countSum = () => {
-      let startPrice = 0;
+      let startPrice = 0,
+          firstWellSelect,
+          secondWellSelect,
+          wellChangePrice = 0,
+          addFloor = 0;
       if (septicType[0].checked){
         startPrice = 10000;
-
+        selectFormControl = selectFormControl.slice(0, 2);
+        firstWellSelect = selectFormControl.map((elem) => {
+          return elem.options[elem.selectedIndex].value;
+        });
+        firstWellSelect.forEach((elem) => {
+          wellChangePrice = wellChangePrice + startPrice / 100 * elem;
+        });
+        if (septicType[1].checked){
+          addFloor = 1000;
+        }
+        
       } else {
         startPrice = 15000;
+        selectFormControl = [...document.querySelectorAll('.form-control')];
+        secondWellSelect = selectFormControl.map((elem) => {
+          return elem.options[elem.selectedIndex].value;
+        });
+        secondWellSelect.forEach((elem) => {
+          wellChangePrice = wellChangePrice + startPrice / 100 * elem;
+        });
+        if (septicType[1].checked){
+          addFloor = 2000;
+        }
       }
-      console.log(startPrice);
-      calcResult.placeholder = startPrice;
+      calcResult.placeholder = startPrice + wellChangePrice + addFloor;
     };
-
 
     calcBlock.addEventListener('click', (event) => {
       const target = event.target;
