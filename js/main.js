@@ -1,7 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
-  /* вызов попапа звонка */
+  /* вызов попапов */
+  const popupOpen = (elem) => event => {
+    if (elem === document.querySelector('.popup-call') || 
+    elem === document.querySelector('.popup-consultation')){
+      event.preventDefault();
+    }
+    elem.setAttribute('style', 'display: block');
+  };
+
+  /* закрытие попапов */
+  const popupClose = (elem) => event => {
+    event.preventDefault();
+    elem.setAttribute('style', 'display: none');
+  };
+  /* попап звонка */
   const popUpCall = () => {
     const callForm = document.querySelector('.popup-call'),
           allCallBtn = document.querySelectorAll('.call-btn'),
@@ -15,19 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
       needCallBtn.push(allCallBtn[i]);
     }
 
-    const formOpen = (event) => {
-      event.preventDefault();
-      callForm.setAttribute('style', 'display: block');
-    };
-
     for (let item of needCallBtn){
-      item.addEventListener('click', formOpen);
+      item.addEventListener('click', popupOpen(callForm));
     }
 
-    closeBtn.addEventListener('click', (event) => {
-      event.preventDefault();
-      callForm.setAttribute('style', 'display: none');
-    });
+    closeBtn.addEventListener('click', popupClose(callForm));
   };
   popUpCall();
 
@@ -65,23 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   accordeonQuestions();
 
-  /* вызов попапа check */
+  /* попап check */
   const popupCheck = () => {
     const checkForm = document.querySelector('.popup-check'),
           btn = document.querySelector('.gauging-button'),
           closeBtn = document.querySelectorAll('.popup-close')[2];
 
-    const formOpen = () => {
-      checkForm.setAttribute('style', 'display: block');
-    };
+    btn.addEventListener('click', popupOpen(checkForm));
 
-    btn.addEventListener('click', formOpen);
-
-    closeBtn.addEventListener('click', (event) => {
-      event.preventDefault();
-      checkForm.setAttribute('style', 'display: none');
-    });
-
+    closeBtn.addEventListener('click', popupClose(checkForm));
 
   };
   popupCheck();
@@ -102,28 +100,34 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   more();
 
-  /* вызов попапа discount */
+  /* попап discount */
   const popupDiscount = () => {
-    const btns = document.querySelectorAll('.discount-btn'),
-          discountForm = document.querySelector('.popup-discount'),
+    const discountForm = document.querySelector('.popup-discount'),
           closeBtn = document.querySelectorAll('.popup-close')[1];
+    let btns = [...document.querySelectorAll('.discount-btn')];
 
-    const formOpen = () => {
-      discountForm.setAttribute('style', 'display: block');
-    };
-
+    btns.push(document.querySelectorAll('.construct-btn')[3]);
     btns.forEach((elem) => {
-      elem.addEventListener('click', formOpen);
+      elem.addEventListener('click', popupOpen(discountForm));
     });
     
-
-    closeBtn.addEventListener('click', (event) => {
-      event.preventDefault();
-      discountForm.setAttribute('style', 'display: none');
-    });
+    closeBtn.addEventListener('click', popupClose(discountForm));
 
   };
   popupDiscount();
+
+  /* попап consultation */
+  const popupConsult = () => {
+    const consultForm = document.querySelector('.popup-consultation'),
+          closeBtn = document.querySelectorAll('.popup-close')[3];
+    let btn = document.querySelector('.consultation-btn');
+
+    btn.addEventListener('click', popupOpen(consultForm));
+    
+    closeBtn.addEventListener('click', popupClose(consultForm));
+
+  };
+  popupConsult();
 
   /* аккордеон калькулятор */
   const accordeonCalc = () => {
@@ -208,9 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* калькулятор */
   const calc = () => {
     const calcBlock = document.querySelector('#accordion'),
-          septicType = document.querySelectorAll('.onoffswitch-checkbox'),
-          titleHide = document.querySelectorAll('.title-text')[1],
-          selectHide = [...document.querySelectorAll('.select-box')].slice(2, 4);
+          septicType = document.querySelectorAll('.onoffswitch-checkbox');
     let calcResult = document.querySelector('#calc-result'),
     selectFormControl = [...document.querySelectorAll('.form-control')];
 
@@ -262,4 +264,169 @@ document.addEventListener('DOMContentLoaded', () => {
 
   };
   calc();
+
+  /* валидация форм */
+  const formValidation = () => {
+    const forms = [...document.querySelectorAll('form')],
+    telArr = [...document.querySelectorAll('.phone-user')],
+    nameArr = [...document.querySelectorAll('[name=user_name]')];
+    let errorName = true, 
+        errorTel = true; 
+
+    const deleteErrorTel = (tel) => {
+      errorTel = true;
+      let normalChild = tel;
+      let parent =  normalChild.parentNode;
+      let errorTelMessage = [...document.querySelectorAll('.errorTel')];
+      for (let j = 0; j < errorTelMessage.length; j++){
+        if (parent.contains(errorTelMessage[j])){
+          parent.removeChild(errorTelMessage[j]);
+          return errorTel;
+        }
+      }
+    };
+
+    const deleteErrorName = (name) => {
+      errorName = true;
+      let normalChild = name;
+      let parent =  normalChild.parentNode;
+      let errorNameMessage = [...document.querySelectorAll('.errorName')];
+      for (let j = 0; j < errorNameMessage.length; j++){
+        if (parent.contains(errorNameMessage[j])){
+          parent.removeChild(errorNameMessage[j]);
+          return errorName;
+        }
+      }
+    };
+
+    const createNameError = (name) => {
+      forms.forEach((form) => {
+        if (form.contains(name)){
+          if (errorName === true){
+            let errorNameVal = document.createElement('div');
+            errorNameVal.classList = 'errorName';
+            errorNameVal.innerText = 'Только кириллица';
+            errorNameVal.style.cssText = `color: red; font-size: 12px; margin-top: -5px;
+            z-index: 2; position: relative`;
+            name.after(errorNameVal);
+            errorName = 0;
+            return errorName;
+          } else if (errorName === 0){
+            deleteErrorTel(name);
+          }
+        }
+      });
+    };
+
+    const createTelError = (tel) => {
+      forms.forEach((form) => {
+        if (form.contains(tel)){
+          if (errorTel === true){
+            let errorTelVal = document.createElement('div');
+            errorTelVal.classList = 'errorTel';
+            errorTelVal.innerText = 'Введите телефон, используя + и цифры';
+            errorTelVal.style.cssText = `color: red; font-size: 12px; margin-top: -5px;
+            z-index: 2; position: relative`;
+            tel.after(errorTelVal);
+            errorTel = 0;
+            return errorTel;
+          } else if (errorTel === 0){
+            deleteErrorTel(tel);
+          }
+        }
+      });
+    };
+
+    for (let i = 0; i < telArr.length; i++){
+      telArr[i].addEventListener('input', () => {
+        if (!telArr[i].value.match(/^[\+\]?[0-9]+$/g)){
+          if (errorTel === true){
+            createTelError(telArr[i]);
+          } 
+        } else {
+          if (errorTel === 0){
+          createTelError(telArr[i]);
+          }
+        }
+        if (telArr[i].value === ''){
+          deleteErrorTel(telArr[i]);
+        }
+      });
+    }
+    for (let i = 0; i < nameArr.length; i++){
+      nameArr[i].addEventListener('input', () => {
+        if (!nameArr[i].value.match(/[ ]*[А-Яа-яЁё]+$/g)){
+          if (errorName === true){
+            createNameError(nameArr[i]);
+          } 
+        } else {
+          if (errorName === 0){
+          createNameError(nameArr[i]);
+          }
+        }
+        if (nameArr[i].value === ''){
+          deleteErrorName(nameArr[i]);
+        }
+      });
+    }
+
+
+  };
+  formValidation();
+
+  /* AJAX отправка */
+  const sendForm = () => {
+    const errorMessage = 'Что-то пошло не так',
+        loadMessage = 'Загрузка',
+        successMessage = 'Спасибо, мы скоро с вами свяжемся';
+
+    const forms = [...document.querySelectorAll('form')];
+    
+    for (let item of forms){
+      const statusMessage = document.createElement('div');
+      statusMessage.textContent = 'Тут ваше сообщение';
+      statusMessage.style.cssText = 'font-size: 2rem; color: black';
+
+      item.addEventListener('submit', (event) => {
+        event.preventDefault();
+        item.appendChild(statusMessage);
+        statusMessage.textContent = loadMessage;
+        const formData = new FormData(item);
+        let body = {};
+
+        for(let val of formData.entries()){
+          body[val[0]] = val[1];
+        }
+        postData(body)
+            .then ((response) => {
+              if (response.status !== 200){
+                throw new Error ('not 200');
+              }
+              statusMessage.textContent = successMessage;
+              const messageHide = setTimeout(function(){
+                statusMessage.textContent = '';
+              },6000);            
+              let itemInputsArr = [...item.querySelectorAll('input')];
+                for (let elem of itemInputsArr){
+                  elem.value = '';
+                }
+            }) 
+            .catch ((error) => {
+              statusMessage.textContent = errorMessage;
+            });
+      });
+
+      const postData = (body) => {
+        return fetch ('../server.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+      };
+
+    }
+  };
+  sendForm();
 });
