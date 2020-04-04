@@ -12,7 +12,6 @@ const popupDiscount = () => {
   });
   
   discountForm.addEventListener('click', popupClose(discountForm));
-  closeBtn.addEventListener('click', popupClose(discountForm));
 };
 
 export default popupDiscount;

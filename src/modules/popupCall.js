@@ -18,7 +18,6 @@ const popupCall = () => {
     item.addEventListener('click', popupOpen(callForm));
   }
 
-  closeBtn.addEventListener('click', popupClose(callForm));
   callForm.addEventListener('click', popupClose(callForm));
 };
 

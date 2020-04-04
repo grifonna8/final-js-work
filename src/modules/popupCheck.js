@@ -8,7 +8,6 @@ const popupCheck = () => {
 
   btn.addEventListener('click', popupOpen(checkForm));
   checkForm.addEventListener('click', popupClose(checkForm));
-  closeBtn.addEventListener('click', popupClose(checkForm));
 };
 
 export default popupCheck;
