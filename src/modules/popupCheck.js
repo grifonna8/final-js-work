@@ -7,7 +7,7 @@ const popupCheck = () => {
         closeBtn = document.querySelectorAll('.popup-close')[2];
 
   btn.addEventListener('click', popupOpen(checkForm));
-
+  checkForm.addEventListener('click', popupClose(checkForm));
   closeBtn.addEventListener('click', popupClose(checkForm));
 };
 

@@ -19,6 +19,7 @@ const popupCall = () => {
   }
 
   closeBtn.addEventListener('click', popupClose(callForm));
+  callForm.addEventListener('click', popupClose(callForm));
 };
 
 export default popupCall;
