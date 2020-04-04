@@ -5,11 +5,12 @@ const popupClose = (elem) => event => {
     buttonCheck.forEach((prop2) => {
       if (event.target === prop || event.target === prop2){
         elem.setAttribute('style', 'display: none');
+        event.preventDefault();
       }
     });
     
   });
-  event.preventDefault();
+
   
 };
 
